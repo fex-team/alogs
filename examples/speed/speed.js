@@ -11,8 +11,9 @@ void function(winElement, docElement){
     var trackerName = 'speed';
     alog('define', trackerName, function(){
         var tracker = alog.tracker(trackerName);
-        var timestamp = alog.timestamp;
+        var timestamp = alog.timestamp; // 获取时间戳的函数，相对于alog被声明的时间
         tracker.set('protocolParameter', {
+            // 配置字段，不需要上报
             headend: null,
             bodyend: null,
             domready: null

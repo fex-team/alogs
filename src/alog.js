@@ -367,7 +367,7 @@ alog.fire('click', { element: document.getElementById('save') });
     function command(){
         var args = arguments;
         var method = args[0];
-        if (this.created || /^(on|un|set|get)$/.test(method)){
+        if (this.created || /^(on|un|set|get|create)$/.test(method)){
             var methodFunc = Tracker.prototype[method];
             var params = [];
             for (var i = 1, len = args.length; i < len; i++){
