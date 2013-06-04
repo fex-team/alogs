@@ -1,0 +1,17 @@
+{
+  "name": "alog",
+  "version": "0.1.0",
+  "description": "The front-end log collection module management",
+  "author": "zswang<jihu.wang@gmail.com>",
+  "main": "index.js",
+  "repository": {
+     "type": "git",
+     "url": "git://github.com/uxrp/alog.git"
+  },
+  "main": "./lib/alog.js",
+  "keywords": [
+    "analytic",
+    "tracking"
+  ],
+  "license": "MIT"
+}
