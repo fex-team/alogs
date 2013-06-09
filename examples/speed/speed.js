@@ -26,6 +26,11 @@ void function(winElement, docElement){
         tracker.create({
             postUrl: 'http://localhost:8080/t.gif'
         });
+        tracker.send('pageview', {
+            ht: timestamp(tracker.get('headend')),
+            lt: timestamp(tracker.get('bodyend')),
+            drt: timestamp(tracker.get('domready'))
+        });
         return tracker;
     });
     

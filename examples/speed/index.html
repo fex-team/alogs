@@ -17,8 +17,6 @@ e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[
 </head>
 <body>
     <img src="http://www.baidu.com/img/bdlogo.gif">
-    <script>alog('require', 'speed');</script>
-    <script>alog('speed.set', 'bodyend', new Date);</script>
     <script>
 void function(){
     function on(element, eventName, callback){
@@ -37,6 +35,13 @@ void function(){
         });
     }
 }();
+    </script>
+    <script>alog('speed.set', 'bodyend', new Date);</script>
+    <script>
+alog('set', 'alias', {
+    speed: 'speed.js'
+});
+alog('require', 'speed');
     </script>
 </body>
 </html>

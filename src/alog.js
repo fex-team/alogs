@@ -145,7 +145,7 @@ alog('send', 'pageview'); // alog('default.send', 'pageview');
          * @param{String} moduleName 模块名
          */
         function loadModules(moduleName){
-            var modulesConfig = defaultTracker.get('modules') || {};
+            var modulesConfig = defaultTracker.get('alias') || {};
             var scriptUrl = modulesConfig[moduleName] || (moduleName + '.js');
             if (loadScripts[scriptUrl]) return;
             loadScripts[scriptUrl] = true;

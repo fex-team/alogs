@@ -1,4 +1,4 @@
-﻿void function(){
+void function(){
     
     var fs = require('fs');
     var path = require('path');
