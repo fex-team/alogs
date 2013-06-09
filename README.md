@@ -53,7 +53,7 @@ alog('pv.on', 'send', function(data){
 + 事件派发
 
 ```javascript
-alog('pv.fire', 'record', 'click, new Date);
+alog('pv.fire', 'record', 'click', new Date);
 alog('pv.on', 'record', function(event, time){
   console.log(event, time);
 });
