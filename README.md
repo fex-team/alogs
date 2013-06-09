@@ -43,7 +43,21 @@ alog('require', ['pv'], function(pvTracker){
 ### 事件管理
 
 + 事件绑定和注销
+
+```javascript
+alog('pv.on', 'send', function(data){
+  data.uid = $.cookie('userid');
+});
+```
+
 + 事件派发
+
+```javascript
+alog('pv.fire', 'record', 'click, new Date);
+alog('pv.on', 'record', function(event, time){
+  console.log(event, time);
+});
+```
 
 ## 参考资料
 
