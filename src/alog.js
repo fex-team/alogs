@@ -367,6 +367,7 @@ alog.fire('click', { element: document.getElementById('save') });
     function command(){
         var args = arguments;
         var method = args[0];
+
         if (this.created || /^(on|un|set|get|create)$/.test(method)){
             var methodFunc = Tracker.prototype[method];
             var params = [];
@@ -545,8 +546,14 @@ alog.fire('click', { element: document.getElementById('save') });
     /**
      * 触发事件
      */
-    Tracker.prototype.fire = function(eventName, data){
-        return $.fire(this.name + '.' + eventName, data);
+    Tracker.prototype.fire = function(eventName){
+        var items = [this.name + '.' + eventName];
+
+        var args = arguments;
+        for(var i = 1; i < args.length; i++){
+            items.push(args[i]);
+        }
+        return fire.apply(this, items);
     };
 
     /**

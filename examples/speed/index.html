@@ -7,16 +7,36 @@
     <script>
 void function(e,t,n,a,o,i,m){
 e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=e[o].l||+new Date,i=t.createElement(n),i.asyn=1,i.src=a,m=t.getElementsByTagName(n)[0],m.parentNode.insertBefore(i,m)
-}(window,document,"script","../../dist/alog.min.js","alog");
+}(window,document,"script",/*"../../dist/alog.min.js"*/"../../src/alog.js","alog");
     </script>
     <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
     
     
-    <script>alog('speed.set', 'headend', +new Date);</script>
+    <script>alog('speed.set', 'headend', new Date);</script>
     <script>$(function(){alog('speed.set', 'domready', +new Date);});</script>
 </head>
 <body>
+    <img src="http://www.baidu.com/img/bdlogo.gif">
     <script>alog('require', 'speed');</script>
-    <script>alog('speed.set', 'bodyend', +new Date);</script>
+    <script>alog('speed.set', 'bodyend', new Date);</script>
+    <script>
+void function(){
+    function on(element, eventName, callback){
+        if (element.addEventListener){
+            element.addEventListener(eventName, callback, false);
+        } else if (element.attachEvent){
+            element.attachEvent('on' + eventName, callback);
+        }
+    }
+
+    var imgs = document.getElementsByTagName('img');
+    for (var i = 0; i < imgs.length; i++){
+        on(imgs[i], 'load', function(e){
+            var target = e.target || e.srcElement;
+            alog('speed.fire', 'record', target.src, new Date);
+        });
+    }
+}();
+    </script>
 </body>
 </html>

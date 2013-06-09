@@ -12,6 +12,11 @@ void function(winElement, docElement){
     alog('define', trackerName, function(){
         var tracker = alog.tracker(trackerName);
         var timestamp = alog.timestamp; // 获取时间戳的函数，相对于alog被声明的时间
+        tracker.on('record', function(url, time){
+            var data = {};
+            data[url] = timestamp(time);
+            tracker.send('timing', data);
+        });
         tracker.set('protocolParameter', {
             // 配置字段，不需要上报
             headend: null,
@@ -20,11 +25,6 @@ void function(winElement, docElement){
         });
         tracker.create({
             postUrl: 'http://localhost:8080/t.gif'
-        });
-        tracker.send('timing', {
-            he: timestamp(tracker.get('headend')),
-            be: timestamp(tracker.get('bodyend')),
-            dr: timestamp(tracker.get('domready'))
         });
         return tracker;
     });
