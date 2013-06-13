@@ -7,6 +7,15 @@ alog
 
 + 一套前端采集统计数据的框架，支持异步上报和异步模块管理
 
++ 页面加载的方式
+
+```html
+<script>
+void function(e,t,n,a,o,i,m){
+e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=e[o].l||+new Date,i=t.createElement(n),i.asyn=1,i.src=a,m=t.getElementsByTagName(n)[0],m.parentNode.insertBefore(i,m)
+}(window,document,"script","http://uxrp.github.io/alog/dist/alog.min.js","alog");
+</script>
+```
 ## 主要功能
 
 ### 异步上报
@@ -45,19 +54,16 @@ alog('require', ['pv'], function(pvTracker){
 + 事件绑定和注销
 
 ```javascript
-alog('pv.on', 'send', function(data){
-  data.uid = $.cookie('userid');
+function record(e){
+  
+}
+alog('speed.on', 'record', function(e){
+  var buffer = this.get('buffer');
+  buffer.push('e');
 });
 ```
 
 + 事件派发
-
-```javascript
-alog('pv.fire', 'record', 'click', new Date);
-alog('pv.on', 'record', function(event, time){
-  console.log(event, time);
-});
-```
 
 ## 参考资料
 
