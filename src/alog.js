@@ -638,13 +638,12 @@ alog.fire('click', { element: document.getElementById('save') });
         }
         $.p = $.q = { push: function(args){ $.apply($, args) } }; // 接管之前的定义
 
+        // 开始处理缓存命令
+        for (var i = 0; i < items.length; i++){
+            $.apply($, items[i]);
+        }
     }
     winElement[objectName] = $;
-
-    // 开始处理缓存命令
-    for (var i = 0; i < items.length; i++){
-        $.apply($, items[i]);
-    }
 
     /* ie start */
     if (ie){
