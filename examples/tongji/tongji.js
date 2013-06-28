@@ -9,7 +9,7 @@ void function(winElement, docElement){
         (winElement[objectName].q = winElement[objectName].q || []).push(arguments);
     };
 
-    winElement._hmt = winElement._hmt || [];
+    winElement._hmt = winElement._hmt || []; // 全局变量
 
     function addScript(url, callback) {
         var script = docElement.createElement("script"),
