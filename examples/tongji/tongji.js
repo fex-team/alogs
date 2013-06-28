@@ -30,7 +30,6 @@ void function(winElement, docElement){
                 scriptLoaded = 1;
                 try {
                     callback();
-                    clearTimeout(timer);
                 } finally {
                     script.onload = script.onreadystatechange = null;
                     script.parentNode.removeChild(script);
