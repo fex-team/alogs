@@ -9,6 +9,8 @@ void function(winElement, docElement){
         (winElement[objectName].q = winElement[objectName].q || []).push(arguments);
     };
 
+    winELement._hmt = winELement._hmt || [];
+
     function addScript(url, callback) {
         var script = docElement.createElement("script"),
             scriptLoaded = 0;
