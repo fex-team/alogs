@@ -14,8 +14,11 @@ e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[
     <script>
 alog('set', 'alias', { tongji: 'tongji.js' });
 alog('tongji.set', 'id', '117db99758bc30d29de3e7b52a5d4b92');
-alog('require', 'tongji');
     </script>
     <button id="button1">button1</button>
+    <script>
+alog('tongji.send', 'event', 'Button', 'Click', '#button1');
+alog('require', 'tongji');
+    </script>
 </body>
 </html>
