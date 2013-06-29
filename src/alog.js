@@ -510,7 +510,9 @@ alog.fire('click', { element: document.getElementById('save') });
             }
         }
         this.fire('send', data);
-        report(this.fields.postUrl, runProtocolParameter(this.fields.protocolParameter, data));
+        if (this.fields.postUrl){ // 属于代理统计的情况
+            report(this.fields.postUrl, runProtocolParameter(this.fields.protocolParameter, data));
+        }
     };
 
     /**
