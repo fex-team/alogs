@@ -1,7 +1,3 @@
-% ALog 文档
-% wangjihu zhaoshuang
-% 2013-07-01
-
 ALog
 =======
 
@@ -64,13 +60,11 @@ ALog使用异步方式加载统计模块，不堵塞页面正常资源加载；
 ###4-2. 准备工作
 + 页面加载的方式
 
-```html
-<script>
-void function(e,t,n,a,o,i,m){
-e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=e[o].l||+new Date,i=t.createElement(n),i.asyn=1,i.src=a,m=t.getElementsByTagName(n)[0],m.parentNode.insertBefore(i,m)
-}(window,document,"script","http://uxrp.github.io/alog/dist/alog.min.js","alog");
-</script>
-```
+		<script>
+		void function(e,t,n,a,o,i,m){
+		e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=e[o].l||+new Date,i=t.createElement(n),i.asyn=1,i.src=a,m=t.getElementsByTagName(n)[0],m.parentNode.insertBefore(i,m)
+		}(window,document,"script","http://uxrp.github.io/alog/dist/alog.min.js","alog");
+		</script>
 
 ##5. API文档
 
@@ -81,254 +75,225 @@ ALog分为基础ALog模块和Tracker(追踪器)模块。每个统计模块都会
 
 ####5-1-1. ALog执行方法：alog(trackerMethod, params)
 
-```javascript
-/**
- * 执行
- * @param{String} trackerMethod 追踪器的方法 "<trackerName>.<method>"
- * @param{Object…} params 方法
- */
-alog('pv.send', 'pageview');
-```
+	/**
+	 * 执行
+	 * @param{String} trackerMethod 追踪器的方法 "<trackerName>.<method>"
+	 * @param{Object} params 方法
+	 */
+	alog('pv.send', 'pageview');
 
 ####5-1-2. ALog模块定义define：alog('define', 'moduleName', requires, dealFunc)
 
-```javascript
-/**
- * 定义模块
- * @param{String} 'define'
- * @param{String} moduleName 模块名
- * @param{Array}[optional] requires 依赖模块名
- * @param{Function} dealFunc 处理函数
- */
-alog('define', 'pv', function(){
-   var pvTracker = alog.tracker('pv');
-   pvTracker.set('ver', 1);
-   pvTracker.set('px', window.screen.width + 'x' + window.screen.height);
-   return pvTracker;
-});
-```
+	/**
+	 * 定义模块
+	 * @param{String} 'define'
+	 * @param{String} moduleName 模块名
+	 * @param{Array}[optional] requires 依赖模块名
+	 * @param{Function} dealFunc 处理函数
+	 */
+	alog('define', 'pv', function(){
+	   var pvTracker = alog.tracker('pv');
+	   pvTracker.set('ver', 1);
+	   pvTracker.set('px', window.screen.width + 'x' + window.screen.height);
+	   return pvTracker;
+	});
 
 ####5-1-3. ALog模块引用require：alog('require', ['module1', 'module2'], callback)
 
-```javascript
-/**
- * 引用模块
- * @param{String} 'require'
- * @param{Array} 引用的模块
- * @param{Function} callback 回调函数
- */
-alog('require', ['pv'], function(pvTracker){
-  pvTracker.create({
-    postUrl: 'http://localhost/u.gif'
-  });
-});
-```
+	/**
+	 * 引用模块
+	 * @param{String} 'require'
+	 * @param{Array} 引用的模块
+	 * @param{Function} callback 回调函数
+	 */
+	alog('require', ['pv'], function(pvTracker){
+	  pvTracker.create({
+	    postUrl: 'http://localhost/u.gif'
+	  });
+	});
 
-####. ALog获取/创建追踪器: alog.tracker(moduleName)
-```javascript
-/**
- * 获取/创建追踪器
- * @param{String}[optional] moduleName 模块名
- */
- //获取alog的tracker
- alog.tracker('default');
- alog.tracker();
- //获取pv模块的tracker
- alog.tracker('pv');
-```
+####5-1-4. ALog获取/创建追踪器: alog.tracker(moduleName)
+	/**
+	 * 获取/创建追踪器
+	 * @param{String}[optional] moduleName 模块名
+	 */
+	 //获取alog的tracker
+	 alog.tracker();
+	 alog.tracker('default');
+	 //获取pv模块的tracker
+	 alog.tracker('pv');
 
-####5-1-4. ALog模块绑定事件on：alog.on([element, ]'eventName', dealFunc)
-
-```javascript
-/**
- * 绑定事件
- * @param{Element}[optional] element 元素
- * @param{String} eventName 绑定的绑定名称
- * @param{Function} dealFunc 处理函数
- */ 
-//自定义事件
-function dealClick(e){
-  var target = e.target || e.srcElement,
-  	  	text = target.innerText || target.textcontent,
-  	  	data = e.data;
-  	data.target = data.target || target;
-  	data.text = data.text || text;
-  	alog('default.send', 'event', data);
-}
-alog.on('click', dealClick);
-//DOM事件
-function dealBtnClick(){
-	alert('click me!');
-}
-alog.on(document.getElementById("btn"), 'click', dealBtnClick);
-```
-####5-1-4. ALog模块注销事件un：alog.un([elment, ]'eventName', dealFunc)
-
-```javascript
-/**
- * 注销事件
- * @param{Element}[optional] element 元素
- * @param{String} eventName 解绑的事件名称
- * @param{Function} dealFunc 之前绑定事件的函数
- */
-//自定义事件注销
-alog.un('click', dealClick);
-//DOM事件注销
-alog.un(document.getElementById("btn"), 'click', dealBtnClick);
-```
-
-####5-1-5. ALog派发事件fire: alog.fire('eventName')
-```javascript
-/**
- * 派发事件
- * @param{String} eventName 事件名称
- */
-alog.fire('click', {target: document.getElementById('btn'), data: {}});
-```
-
-派发事件
 
 ###5-2. ATracker模块
+Tracker模块的方法调用有两种方法：
+
+1. 同步方法: moduleTracker.method(params)
+		
+		alog('require', ['module'], function(moduleTracker){
+			var btn = document.getElementById('btn');
+			btn.onclick = function(){
+				moduleTracker.send('event', {
+					type: 'click',
+					target: btn,
+					val: btn.value
+				});
+			}
+		});
+
+2. 异步方法: alog('moduleTracker.method', params)
+		
+		var btn = document.getElementById('btn');
+		btn.onclick = function(){
+			alog('module.send', 'event', {
+				type: 'click',
+				target: btn,
+				val: btn.value
+			});
+		}
+
+上述两种方法都可以做到统计ID为btn的元素点击，并上报记录，但区别是：
+
+* 同步方法会在模块加载完，才开始绑定点击事件，所以可能会丢失加载前的点击。同步方法适合用户模块定义内部。
+* 异步方法在执行代码后生效，如果使用的模块还没加载完，会先放到事件队列里，等模块加载完成后，会自动执行事件队列里的时间
 
 ####5-2-1. Tracker创建追踪器create
 ####两种方法
-* moduleTracker.create(fields)
-* alog('module.create', fields)
+* moduleTracker.create(fields) 同步方法(Sync)
+* alog('module.create', fields) 异步方法(Async)
 
-```javascript
-/**
- * 创建追踪器实例
- * @param{String} 'module.create' 模块创建追踪器实例
- * @param{Object} fields 字段对象
- */
-alog('pv.create', {
-  postUrl: 'http://localhost/u.gif'
-});
-```
+		/**
+		 * 创建追踪器实例
+		 * @param{String} 'module.create' 模块创建追踪器实例
+		 * @param{Object} fields 字段对象
+		 */
+		alog('pv.create', {
+		  postUrl: 'http://localhost/u.gif'
+		});
 
 ####5-2-1. Tracker设置字段set
 ####两种方法
-* moduelTracker.set([name, ]value)
-* alog('module.set', [name, ]value)
+* moduelTracker.set([name, ]value) 同步方法(Sync)
+* alog('module.set', [name, ]value) 异步方法(Async)
 
-```javascript
-/**
- * 设置字段值
- * @param{String} 'module.set'
- * @param{String}[optional] name 字段名
- * @param{String|Object} value 字段值 
- */
- //name, value
- alog('pv.set', 'page', 'hunter-index');
- //value object
- alog('pv.set', {'page', 'hunter-index'});
-```
+		/**
+		 * 设置字段值
+		 * @param{String} 'module.set'
+		 * @param{String}[optional] name 字段名
+		 * @param{String|Object} value 字段值 
+		 */
+		 //name, value
+		 alog('pv.set', 'page', 'hunter-index');
+		 //value object
+		 alog('pv.set', {'page', 'hunter-index'});
 
 ####5-2-2. Tracker获取字段值get
 ####两种方法
-* moduleTracker.get(name, callback)
-* alog('module.get', name, callback)
+* moduleTracker.get(name, callback) 同步方法(Sync)
+* alog('module.get', name, callback) 异步方法(Async)
 
-```javascript
-/**
- * 获取字段值
- * @param{String} 'module.get'
- * @param{String} name 字段名
- * @param{Function} callback 回调函数
- */
- alog('pv.get', 'page', function(page){
- 	alert(page);
- });
-```
+		/**
+		 * 获取字段值
+		 * @param{String} 'module.get'
+		 * @param{String} name 字段名
+		 * @param{Function} callback 回调函数
+		 */
+		 alog('pv.get', 'page', function(page){
+		 	alert(page);
+		 });
 
 ####5-2-3. Tracker上报数据send
 ####两种方法
-* moduleTracker.send(dataType, fields)
-* alog('module.send', dataType, fields)
+* moduleTracker.send(dataType, fields) 同步方法(Sync)
+* alog('module.send', dataType, fields) 异步方法(Async)
 
-```javascript
-/**
- * 上报数据
- * @param{String} 'module.send'
- * @param{String} dataType 数据类型
- * @param{Object} fields 上报数据
- */
- alog('pv.send', 'pageview', {
- 	'page': 'hunter-index',
- 	'title': 'Hunter首页'
- });
-```
-
+		/**
+		 * 上报数据
+		 * @param{String} 'module.send'
+		 * @param{String} dataType 数据类型
+		 * @param{Object} fields 上报数据
+		 */
+		 alog('pv.send', 'pageview', {
+		 	'page': 'hunter-index',
+		 	'title': 'Hunter首页'
+		 });
+ 
 ####5-2-4. Tracker绑定事件on
 ####两种方法
-* moduleTracker.on(eventName, dealFunc)
-* alog('module.on', eventName, dealFunc)
+* moduleTracker.on(eventName, dealFunc) 同步方法(Sync)
+* alog('module.on', eventName, dealFunc) 异步方法(Async)
 
-```javascript
-/**
- * 绑定事件
- * @param{String} 'module.on'
- * @param{String} eventName 事件名称
- * @param{Function} dealFunc 处理函数
- */
- function dealFunc(data){
- 	if(data.type == "pageview"){
- 		data.ref = document.referrer;
- 	}
- }
- alog('pv.on', 'report', dealFunc);
-```
+		/**
+		 * 绑定事件
+		 * @param{String} 'module.on'
+		 * @param{String} eventName 事件名称
+		 * @param{Function} dealFunc 处理函数
+		 */
+		 function dealFunc(data){
+		 	if(data.type == "pageview"){
+		 		data.ref = document.referrer;
+		 	}
+		 }
+		 alog('pv.on', 'report', dealFunc);
 
 绑定事件
 
 ####5-2-5. Tacker注销事件un
 ####两种方法
-* moduleTracker.un(eventname, dealFunc)
-* alog('module.un', eventName, dealFunc)
+* moduleTracker.un(eventname, dealFunc) 同步方法(Sync)
+* alog('module.un', eventName, dealFunc) 异步方法(Async)
 
-```javascript
-/**
- * 注销事件
- * @param{String} 'module.on'
- * @param{String} eventName 事件名称
- * @param{Function} dealFunc 处理函数
- */
- alog('pv.un', 'report', dealFunc);
-```
-
+		/**
+		 * 注销事件
+		 * @param{String} 'module.on'
+		 * @param{String} eventName 事件名称
+		 * @param{Function} dealFunc 处理函数
+		 */
+		 alog('pv.un', 'report', dealFunc);
+ 
 ####5-2-6. Tracker派发事件fire
 ####两种方法
-* moduleTracker.fire(eventname)
-* alog('module.fire', eventName)
+* moduleTracker.fire(eventname) 同步方法(Sync)
+* alog('module.fire', eventName) 异步方法(Async)
 
-```javascript
-/**
- * 派发事件
- * @param{String} 'module.fire'
- * @param{String} eventName 事件名称
- */
- alog('pv.fire', 'report', {type: "pageview", title: "Hunter首页"});
-```
+		/**
+		 * 派发事件
+		 * @param{String} 'module.fire'
+		 * @param{String} eventName 事件名称
+		 */
+		 alog('pv.fire', 'report', {type: "pageview", title: "Hunter首页"});
 
 ###5-3. 保留字段
+* 上报地址：postUrl
+* 引用模块配置: alias
+* 协议字段，用于简写: protocolParameter
 
-####5-3-1. postUrl
+###5-4. Tracker标准事件(自定义方法)
+Tracker标准事件是指可通过alog('module.on', '标准事件名', dealFunc)的方法自定义处理函数，
+当模块的tracker执行标准事件时，会自动调用自定义方法。(module.fire('标准事件名', data))
 
-上报地址
+* 追踪器创建时触发: create
 
-####5-3-2. protocolParameter
+		/**
+		 *  可用来设置一些页面统一变量
+		 */
+		 alog('module.on', 'create', function(){
+		 	moduleTracker.set({
+		 		pageId: 'hunter-index',
+		 		title: 'Hunter首页'
+		 	});
+		 });
 
-协议字段，用于简写
+* 数据上报时派发: send
 
-###5-4. 标准事件
-
-####5-4-1. create
-
-追踪器创建时触发
-
-####5-4-2. send
-
-数据上报时派发
+		/**
+		 * 可用来修改ALog默认上报字段
+		 */
+		alog('module.on', 'send', function(data){
+			data.t = data.title;
+			delete data.title;
+			data.r = data.refer;
+			delete data.refer;
+		});
 
 ##6. 参考文档
 
