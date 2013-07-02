@@ -170,13 +170,13 @@ Tracker模块的方法调用有两种方法：
 		  postUrl: 'http://localhost/u.gif'
 		});
 
-####5-2-1. Tracker设置字段set
+####5-2-1. Tracker设置上报字段set
 ####两种方法
 * moduelTracker.set([name, ]value) 同步方法(Sync)
 * alog('module.set', [name, ]value) 异步方法(Async)
 
 		/**
-		 * 设置字段值
+		 * 设置上报字段值
 		 * @param{String} 'module.set'
 		 * @param{String}[optional] name 字段名
 		 * @param{String|Object} value 字段值 
@@ -186,13 +186,13 @@ Tracker模块的方法调用有两种方法：
 		 //value object
 		 alog('pv.set', {'page', 'hunter-index'});
 
-####5-2-2. Tracker获取字段值get
+####5-2-2. Tracker获取上报字段值get
 ####两种方法
 * moduleTracker.get(name, callback) 同步方法(Sync)
 * alog('module.get', name, callback) 异步方法(Async)
 
 		/**
-		 * 获取字段值
+		 * 获取上报字段值
 		 * @param{String} 'module.get'
 		 * @param{String} name 字段名
 		 * @param{Function} callback 回调函数
