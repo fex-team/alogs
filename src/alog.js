@@ -341,7 +341,7 @@ alog.fire('click', { element: document.getElementById('save') });
         console.log(url + '?' + items.join('&'));
         return;
         /* debug end */
-        image.src = url + '?' + items.join('&');
+        image.src = url + (url.indexOf('?') < 0 ? '?' : '&') + items.join('&');
     }
 
     /**
