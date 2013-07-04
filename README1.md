@@ -78,6 +78,7 @@ ALog使用异步方式加载统计模块，不堵塞页面正常资源加载；
 				postUrl: "http://localhost/v.gif"
 			});
 			
+			//发送pv统计，send('pageview', [page[, title]])为默认支持格式
 			pvTracker.send("pageview", 'http://www.baidu.com', '百度首页');
 		});
 		
