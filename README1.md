@@ -157,7 +157,7 @@ ALog使用异步方式加载统计模块，不堵塞页面正常资源加载；
 * 其他统计示例
 	* [example-pv](https://github.com/uxrp/alog/tree/master/examples/pv) 未创建tracker，特殊用法，参看 [你不知道的ALog]()
 	* [example-speed](https://github.com/uxrp/alog/tree/master/examples/speed)
-	* [examle-toji](https://github.com/uxrp/alog/tree/master/examples/tongji) 
+	* [examle-tongji](https://github.com/uxrp/alog/tree/master/examples/tongji) 
 
 
 ##5. API文档
