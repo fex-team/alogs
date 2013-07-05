@@ -1,7 +1,3 @@
-% 【文档】ALog 文档
-% wangjihu zhaoshuang
-% 2013-07-01
-
 ALog
 =======
 
