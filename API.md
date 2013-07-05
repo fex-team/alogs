@@ -1,23 +1,17 @@
 ##5. API文档
 
-####ALog概述
-ALog分为基础ALog模块和Tracker(追踪器)模块。
-
-* 基础ALog模块: 负责调用和处理各个模块的操作，并对其进行管理。
-* Tracker模块: 每个统计模块都需要有一个Tracker，Tracker本身包含了一些方法，用来做各个模块的基本任务.
-
-###5-1. 基础ALog模块
+###5-1. ALog实例方法
 
 ####5-1-1. ALog执行方法：alog(trackerMethod, params)
 
 	/**
-	 * 执行
+	 * ALog执行方法，可调用各个tracker事例的方法
 	 * @param{String} trackerMethod 追踪器的方法 "<trackerName>.<method>"
 	 * @param{Object} params 方法
 	 */
 	alog('pv.send', 'pageview');
 
-####5-1-2. ALog模块定义define：alog('define', 'moduleName', requires, dealFunc)
+####5-1-2. ALog模块定义define：alog('define', moduleName, requires, dealFunc)
 
 	/**
 	 * 定义模块
@@ -30,10 +24,19 @@ ALog分为基础ALog模块和Tracker(追踪器)模块。
 	   var pvTracker = alog.tracker('pv');
 	   pvTracker.set('ver', 1);
 	   pvTracker.set('px', window.screen.width + 'x' + window.screen.height);
+	   
+	   //由于模块一般用于统计，而每个统计模块都需要一个tracker实例，所以一般返回一个tracker
 	   return pvTracker;
+	   /**
+	    * 也可以返回一个module
+	    * return {
+	    *    'on': function(){},
+	    *    'un': function(){}
+	    * }
+	    */
 	});
 
-####5-1-3. ALog模块引用require：alog('require', ['module1', 'module2'], callback)
+####5-1-3. ALog模块引用require：alog('require', [moduleName], callback)
 
 	/**
 	 * 引用模块
@@ -47,10 +50,10 @@ ALog分为基础ALog模块和Tracker(追踪器)模块。
 	  });
 	});
 
-####5-1-4. ALog获取/创建追踪器: alog.tracker(moduleName)
+####5-1-4. ALog获取/创建追踪器: alog.tracker(trackerName)
 	/**
-	 * 获取/创建追踪器
-	 * @param{String}[optional] moduleName 模块名
+	 * 获取/创建追踪器，如果没有名为trackerName的tracker实例，将自动创建一个名为trackerName的tracker实例
+	 * @param{String}[optional] trackerName 追踪器名
 	 */
 	 //获取alog的tracker
 	 alog.tracker();
@@ -89,19 +92,19 @@ Tracker模块的方法调用有两种方法：
 上述两种方法都可以做到统计ID为btn的元素点击，并上报记录，但区别是：
 
 * 同步方法会在模块加载完，才开始绑定点击事件，所以可能会丢失加载前的点击。同步方法适合用户模块定义内部。
-* 异步方法在执行代码后生效，如果使用的模块还没加载完，会先放到事件队列里，等模块加载完成后，会自动执行事件队列里的时间
+* 异步方法在执行代码后生效，如果使用的模块还没加载完，会先放到事件队列里，等模块加载完成并执行start方法后，会自动执行事件队列里的时间
 
-####5-2-1. Tracker创建追踪器create
+####5-2-1. Tracker开始上报start
 ####两种方法
-* moduleTracker.create(fields) 同步方法(Sync)
-* alog('module.create', fields) 异步方法(Async)
+* moduleTracker.start(fields) 同步方法(Sync)
+* alog('module.start', fields) 异步方法(Async)
 
 		/**
 		 * 创建追踪器实例
-		 * @param{String} 'module.create' 模块创建追踪器实例
+		 * @param{String} 'module.start' 模块创建追踪器实例
 		 * @param{Object} fields 字段对象
 		 */
-		alog('pv.create', {
+		alog('pv.start', {
 		  postUrl: 'http://localhost/u.gif'
 		});
 
@@ -152,13 +155,13 @@ Tracker模块的方法调用有两种方法：
 		 	'title': 'Hunter首页'
 		 });
  
-####5-2-4. Tracker绑定事件on
+####5-2-4. Tracker注册事件on
 ####两种方法
 * moduleTracker.on(eventName, dealFunc) 同步方法(Sync)
 * alog('module.on', eventName, dealFunc) 异步方法(Async)
 
 		/**
-		 * 绑定事件
+		 * 注册事件
 		 * @param{String} 'module.on'
 		 * @param{String} eventName 事件名称
 		 * @param{Function} dealFunc 处理函数
@@ -169,8 +172,6 @@ Tracker模块的方法调用有两种方法：
 		 	}
 		 }
 		 alog('pv.on', 'report', dealFunc);
-
-绑定事件
 
 ####5-2-5. Tacker注销事件un
 ####两种方法
@@ -200,18 +201,18 @@ Tracker模块的方法调用有两种方法：
 ###5-3. 保留字段
 * 上报地址：postUrl
 * 引用模块配置: alias
-* 协议字段，用于简写: protocolParameter
+* 协议字段，用于上报字段简写: protocolParameter
 
 ###5-4. Tracker标准事件(自定义方法)
 Tracker标准事件是指可通过alog('module.on', '标准事件名', dealFunc)的方法自定义处理函数，
 当模块的tracker执行标准事件时，会自动调用自定义方法。(module.fire('标准事件名', data))
 
-* 追踪器创建时触发: create
+* 追踪器创建时触发: start
 
 		/**
 		 *  可用来设置一些页面统一变量
 		 */
-		 alog('module.on', 'create', function(){
+		 alog('module.on', 'start', function(){
 		 	moduleTracker.set({
 		 		pageId: 'hunter-index',
 		 		title: 'Hunter首页'
