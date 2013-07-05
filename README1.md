@@ -1,3 +1,7 @@
+% 【文档】ALog 文档
+% wangjihu zhaoshuang
+% 2013-07-01
+
 ALog
 =======
 
@@ -64,9 +68,12 @@ ALog使用异步方式加载统计模块，不堵塞页面正常资源加载；
 * 统计PV
 		
 		//简单统计，页面直接写统计代码
-		//首先定义PV统计模块
+		//首先定义PV统计模块，此处的pv为moduleName
 		alog('define', 'pv', function(){
-			var pvTracker = alog.getTracker("pv");
+			//此处的pv为trackerName，一般一个模块就是一个统计任务，
+			//每个统计任务都需要有一个tracker用来上报数据
+			//所以一般一个module就是一个tracker
+			var pvTracker = alog.getTracker('pv');
 			
 			return pvTracker;
 		});
