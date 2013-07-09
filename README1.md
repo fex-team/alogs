@@ -3,19 +3,26 @@ ALog
 
 ##内容导航
 * [什么是ALog?](#1-alog-)
-* [如何使用ALog?](#2-alog-)
-* [ALog API](#3-alog-api)
-* [ALog进阶开发](#4-alog-)
-	* [基本概念](#4-1-)
-	* [如何定义模块](#4-2-)
-	* [注意事项](#4-3-)
-* [ALog应用示例](#5-alog)
-* [参考文档](#6-)
+* [为什么使用ALog](#2-alog-)
+* [如何使用ALog?](#3-alog-)
+* [ALog API](#4-alog-api)
+* [ALog进阶开发](#5-alog-)
+	* [基本概念](#5-1-)
+	* [如何定义模块](#5-2-)
+	* [注意事项](#5-3-)
+* [ALog应用示例](#6-alog)
+* [参考文档](#7-)
  
 ##1. 什么是ALog ?
-ALog(all log)是前端数据采集的统一解决方案。
+ALog(all log)是前端数据采集的统一解决方案，帮助你简单、有效地完成你的前端统计业务需求。
 
-##2. 如何使用ALog ?
+##2. 为什么使用ALog ?
+* 统一使用方式，方便维护
+* 统计稳定，我们踩过的坑不会让你再跳
+* 易于使用，只有简单的几个方法，助你完成任务
+* 方便扩展，自定义模块、加载第三方模块
+
+##3. 如何使用ALog ?
 1. 页面引入ALog
 
 		<script>
@@ -55,11 +62,11 @@ ALog(all log)是前端数据采集的统一解决方案。
 **如果你想开发自己的统计模块，那么请跟我继续。**
 
 
-##3. ALog API
+##4. ALog API
 [API文档](./API.md)
 
-##4. ALog进阶开发
-###4-1 基本概念
+##5. ALog进阶开发
+###5-1 基本概念
 * ALog代码中包含 **alog实例对象** 和 **Tracker(追踪器)类** 两部分
 * 每个统计模块都需要创建一个 **tracker实例** ，tracker负责该统计模块的 **各项基本配置(set, get方法)**、 **数据采集(on, un, fire方法)** 和 **数据上报(report方法)**
 * **alog实例对象** 作为 **控制中心** ，统一管理各个tracker实例，
@@ -67,7 +74,7 @@ ALog(all log)是前端数据采集的统一解决方案。
 	* 同步方法(Sync):  tracker.method(data)  ——  一般在模块定义内部使用
 	* 异步方法(Async):  alog('trackerName.method', data)  ——  一般在模块外部使用
 	
-###4-2 如何定义模块
+###5-2 如何定义模块
 如果我现在有这样一个统计需求：
 
 这是一个用户体验调研的页面，用户可以通过设置字体、字体大小、行间距等选择自己喜欢的样式阅读文档，我想统计一下用户的设置情况。
@@ -149,7 +156,7 @@ ALog(all log)是前端数据采集的统一解决方案。
 
 OK，这样模块就定义好了，接下来如何引用该模块我想你懂的。
 
-###4-3 注意事项
+###5-3 注意事项
 1. 必须要定义模块才能使用么？
 	
 		不是的，就像example-pv里的代码所写，下面几行代码已经完成了PV统计，简单吧:)
@@ -201,13 +208,13 @@ OK，这样模块就定义好了，接下来如何引用该模块我想你懂的
 		});
 
 
-##5. ALog应用示例
+##6. ALog应用示例
 * 简单统计: pv统计，参看 [pv统计](https://github.com/uxrp/alog/tree/master/examples/pv)
 * 复杂统计: 自定义模块统计，参看 [speed统计](https://github.com/uxrp/alog/tree/master/examples/speed)
 * 代理统计: 接入第三方统计，参看 [百度统计](https://github.com/uxrp/alog/tree/master/examples/tongji)
 
 
-##6. 参考文档
+##7. 参考文档
 
 google analytics https://developers.google.com/analytics/devguides/platform/
 
