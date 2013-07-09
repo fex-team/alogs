@@ -4,12 +4,12 @@ ALog
 ##内容导航
 * [什么是ALog?](#1-alog-)
 * [如何使用ALog?](#2-alog-)
-* [ALog API](#3-alog-api-)
+* [ALog API](#3-alog-api)
 * [ALog进阶开发](#4-alog-)
 	* [基本概念](#4-1-)
 	* [如何定义模块](#4-2-)
 	* [注意事项](#4-3-)
-* [ALog应用示例](#5-alog-)
+* [ALog应用示例](#5-alog)
 * [参考文档](#6-)
  
 ##1. 什么是ALog ?
