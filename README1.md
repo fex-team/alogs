@@ -134,7 +134,13 @@ ALog(all log)是前端数据采集的统一解决方案。
 					data.fontFamily = '宋体';
 				}
 			});
-			…
+			...
+			
+			//初始化，对于那些无法在模块定义中统一设置初始化参数的模块，可以在模块引用中初始化模块。
+			tracker.start({
+				//设置上报地址
+				postUrl: 'http://localhost/x.gif'
+			});
 			
 			//返回追踪器
 			return tracker;
