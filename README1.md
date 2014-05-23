@@ -2,6 +2,7 @@ ALog
 =======
 
 ##内容导航
+
 * [什么是ALog?](#1-alog-)
 * [为什么使用ALog](#2-alog-)
 * [如何使用ALog?](#3-alog-)
@@ -12,17 +13,20 @@ ALog
 	* [注意事项](#5-3-)
 * [ALog应用示例](#6-alog)
 * [参考文档](#7-)
- 
-##1. 什么是ALog ?
+
+## 1. 什么是ALog ?
+
 ALog(all log)是前端数据采集的统一解决方案，帮助你简单、有效地完成你的前端统计业务需求。
 
-##2. 为什么使用ALog ?
+## 2. 为什么使用ALog ?
+
 * 统一使用方式，方便维护
 * 统计稳定，我们踩过的坑不会让你再跳
 * 易于使用，只有简单的几个方法，助你完成任务
 * 方便扩展，自定义模块、加载第三方模块
 
-##3. 如何使用ALog ?
+## 3. 如何使用ALog ?
+
 1. 页面引入ALog
 
 		<script>
@@ -62,25 +66,31 @@ ALog(all log)是前端数据采集的统一解决方案，帮助你简单、有�
 **如果你想开发自己的统计模块，那么请跟我继续。**
 
 
-##4. ALog API
+## 4. ALog API
+
 [API文档](./API.md)
 
-##5. ALog进阶开发
-###5-1 基本概念
+## 5. ALog进阶开发
+
+### 5-1 基本概念
+
 * ALog代码中包含 **alog实例对象** 和 **Tracker(追踪器)类** 两部分
 * 每个统计模块都需要创建一个 **tracker实例** ，tracker负责该统计模块的 **各项基本配置(set, get方法)**、 **数据采集(on, un, fire方法)** 和 **数据上报(report方法)**
 * **alog实例对象** 作为 **控制中心** ，统一管理各个tracker实例，
 * tracker的方法调用方式
 	* 同步方法(Sync):  tracker.method(data)  ——  一般在模块定义内部使用
 	* 异步方法(Async):  alog('trackerName.method', data)  ——  一般在模块外部使用
+
 	
 ###5-2 如何定义模块
+
 如果我现在有这样一个统计需求：
 
 这是一个用户体验调研的页面，用户可以通过设置字体、字体大小、行间距等选择自己喜欢的样式阅读文档，我想统计一下用户的设置情况。
 
 我需要为他写个模块，命名为form.js
 
+``` javascript
 	void function(winElement, docElement){
 		/****alog为异步加载，避免模块加载前未加载alog****/
 		var objectName = winElement.alogObjectName || 'alog';
@@ -153,20 +163,26 @@ ALog(all log)是前端数据采集的统一解决方案，帮助你简单、有�
 			return tracker;
 		});
 	})(window, document);
+```
 
 OK，这样模块就定义好了，接下来如何引用该模块我想你懂的。
 
-###5-3 注意事项
+### 5-3 注意事项
+
 1. 必须要定义模块才能使用么？
 	
 		不是的，就像example-pv里的代码所写，下面几行代码已经完成了PV统计，简单吧:)
+```javascript
+
 		alog('pv.start', {
 			postUrl: 'http://localhost/v.gif'
 		});
 		alog('pv.send', 'pageview');
-		当调用alog('trackerName.method')时，如果发现没有trackerName，
-		那么会自动创建一个tracker，名为trackerName
+```
+		当调用 `alog('trackerName.method')` 时，如果发现没有 trackerName，
+		那么会自动创建一个tracker，名为 trackerName
 		但是这种用法仅建议在做非常简单的统计时使用，否则建议使用模块定义的方法
+
 2. 你以为不执行tracker.start就能上报么？
 	
 		这样是不行的
@@ -174,11 +190,13 @@ OK，这样模块就定义好了，接下来如何引用该模块我想你懂的
 		那么如果不执行tracker.start会有什么影响呢?
 		* 同步方法调用send、fire，则直接return
 		* 异步方法调用send、fire，则放在事件队列里，等待tracker执行start方法后，依次将事件队列里的方法执行
+		
 3. alog的define定义的是module，为啥返回的是tracker？module和tracker是什么关系？
 
 		alog的define、require就是CommonJS规范里的定义和引用模块，
 		只是因为每个统计模块都需要tracker，并return tracker，所以一个module可以是一个tracker实例，
 		这可能会使你误解，但其实alog也是可以这样定义模块的
+```javascript
 		alog('define', 'module', function(){
 			var exports = {};
 			...
@@ -187,9 +205,12 @@ OK，这样模块就定义好了，接下来如何引用该模块我想你懂的
 			...
 			return exports;
 		});
+```
+
 4. 模块定义中Copy的这段代码是必须的么？
-	
-		var objectName = winElement.alogObjectName || 'alog';
+
+```javascript
+	    var objectName = winElement.alogObjectName || 'alog';
 	    var alog = winElement[objectName] = winElement[objectName] || function(){
 	        winElement[objectName].l = winElement[objectName].l || +new Date;
 	        (winElement[objectName].q = winElement[objectName].q || []).push(arguments);
@@ -198,23 +219,26 @@ OK，这样模块就定义好了，接下来如何引用该模块我想你懂的
 	    不是的。因为alog是异步加载的，有可能执行改代码时alog还没加载完，导致alog还不是一个函数而出错。
 	    这里把调用alog的信息存储在一个队列里，待alog加载完成后，自动执行队列里的方法。
 	    所以如果你把模块脚本和alog打包在一起的话，该段代码就可以不要了。
+```
+
 5. 我想要修改上报数据的字段名可不可以？
 
+```javascript
 		protocolParameter —— 协议参数
 		通过tracker的set方法设置
 		tracker.set('protocolParameter', {
 			"url": 'u',
 			'title': 't'
 		});
+```
 
 
-##6. ALog应用示例
+## 6. ALog应用示例
+
 * 简单统计: pv统计，参看 [pv统计](https://github.com/uxrp/alog/tree/master/examples/pv)
 * 复杂统计: 自定义模块统计，参看 [speed统计](https://github.com/uxrp/alog/tree/master/examples/speed)
 * 代理统计: 接入第三方统计，参看 [百度统计](https://github.com/uxrp/alog/tree/master/examples/tongji)
 
-
-##7. 参考文档
+## 7. 参考文档
 
 google analytics https://developers.google.com/analytics/devguides/platform/
-
