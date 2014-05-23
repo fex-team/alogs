@@ -63,7 +63,7 @@ ALog使用异步方式加载统计模块，不堵塞页面正常资源加载；
 ```html
 <script>
 void function(e,t,n,a,o,i,m){
-e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=e[o].l||+new Date,i=t.createElement(n),i.asyn=1,i.src=a,m=t.getElementsByTagName(n)[0],m.parentNode.insertBefore(i,m)
+e.alogObjectName=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=e[o].l||+new Date,i=t.createElement(n),i.async=!0,i.src=a,m=t.getElementsByTagName(n)[0],m.parentNode.insertBefore(i,m)
 }(window,document,"script","http://uxrp.github.io/alog/dist/alog.min.js","alog");
 </script>
 ```

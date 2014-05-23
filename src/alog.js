@@ -152,7 +152,7 @@ alog('send', 'pageview'); // alog('default.send', 'pageview');
             var scriptTag = 'script';
             var scriptElement = docElement.createElement(scriptTag);
             var lastElement = docElement.getElementsByTagName(scriptTag)[0];
-            scriptElement.asyn = 1;
+            scriptElement.async = !0;
             scriptElement.src = scriptUrl;
             lastElement.parentNode.insertBefore(scriptElement, lastElement);
         }
