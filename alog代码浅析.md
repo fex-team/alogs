@@ -35,7 +35,7 @@ trackers['trackerName'] = {
         //other properties
     },
     argsList: [...],
-    alog：$,
+    alog: $,
     //other properties
 }
 
