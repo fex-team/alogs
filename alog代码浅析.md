@@ -13,20 +13,121 @@ alog详细解析
 alog_listeners = {
 	...
 }
+// alog_listeners 一个样例
+alog_listeners['eventName'] = [
+	callback1,
+	callback2,
+	//other callbacks
+]
+
 
 trackers = {
 	...
+}
+// trackers 一个样例
+trackers['trackerName'] = {
+	name: 'trackerName',
+	fields: {
+        protocolParameter: {
+            postUrl: null,
+            protocolParameter: null
+        },
+        //other properties
+    },
+    argsList: [...],
+    alog：$,
+    //other properties
 }
 
 modules = {
 	...
 }
+// modules 一个样例
+modules['moduleName'] = {
+	name: 'moduleName',
+	requires: [...],
+	creator: function(){...},
+	defining: ture,
+	defined: ture,
+	instance: ...,
+	waiting: {...}
+}
 ```
+
+
 
 ### alog 的同步方法与异步方法的区别：
 
 * 同步方法会在模块加载完，才开始绑定点击事件，所以可能会丢失加载前的点击。同步方法适合用户模块定义内部。
 * 异步方法在执行代码后生效，如果使用的模块还没加载完，会先放到事件队列里，等模块加载完成并执行 start 方法后，会自动执行事件队列里的时间。
+
+### alog 中 tracker 与 module 的区别与联系
+
+虽然 tracker 和 module 看起来很相似，而且在定义 module 和创建 tracker 的时候，使用的都是同样的名称，但是它们还是不同的概念：
+	
+1. module 不是必需的，当在执行的统计非常简单的时候，例如 PV 的统计，则可以完全不需要使用 module 而直接完成对应功能：
+
+```javascript
+alog('pv.start', {
+    postUrl: 'http://localhost/v.gif'
+});
+alog('pv.send', 'pageview');
+```
+
+但是当需要进行一些复杂的统计时，例如 speed 统计、 exception 统计，则使用 module 会带来很大的方便。
+
+而 tracker 是必需的， alog 通过 tracker 来进行 set 、 get 、 on 、 fire 、 send 等方法。
+
+2. 在 module 中调用 tracker ：
+
+```javascript
+alog('define', moduleName, function(){...});
+```
+
+function return 的可以是一个 tracker 实例， 而这个实例就会作为 module 的 instance 属性保存下来。而且在 module 中，实例 tracker 执行了各种需要的操作：
+
+```javascript
+alog('define', trackerName, function(){
+    var tracker = alog.tracker(trackerName);
+    var timestamp = alog.timestamp; // 获取时间戳的函数，相对于alog被声明的时间
+    tracker.on('record', function(url, time){
+        var data = {};
+        data[url] = timestamp(time);
+        tracker.send('timing', data);
+    });
+	tracker.set('protocolParameter', {
+        // 配置字段，不需要上报
+	    headend: null,
+	    bodyend: null,
+	    domready: null
+	});
+	tracker.create({
+	    postUrl: 'http://localhost:8080/t.gif'
+	});
+	tracker.send('pageview', {
+		ht: timestamp(tracker.get('headend')),
+		lt: timestamp(tracker.get('bodyend')),
+		drt: timestamp(tracker.get('domready'))
+	});
+	return tracker;
+});
+```
+
+3. 在 tracker 中加载 module ：
+
+在函数 loadModules 中，通过 moduleName 获取对应的文件，这个操作则是保存在一个名为 'default' 的 tracker 的 fields 属性中，即会在 loadModules 操作之前执行对应的 set 操作：
+
+```javascript
+
+var modulesConfig = defaultTracker.get('alias') || {};
+var scriptUrl = modulesConfig[moduleName] || (moduleName + '.js');
+
+
+alog('set', 'alias', {
+    speed: 'speed.js'
+});
+```
+
 
 ---
 
@@ -34,7 +135,7 @@ modules = {
 
 在alog.js代码中，通过
 
-```
+```javascript
 var objectName = winElement.alogObjectName || 'alog';
 winElement[objectName] = $;
 ```
@@ -57,7 +158,7 @@ tracker.method(data);
 
 在入口函数中
 
-```
+```javascript
 $ = function(params) {
   ...
 }
@@ -105,7 +206,7 @@ var tracker = alog.tracker(trackerName);
 
 该方法调用 alog.js 中的 getTracker 方法:
 
-```
+```javascript
 $.tracker = getTracker;
 ```
 
@@ -216,7 +317,7 @@ fire.apply(this, items)
 
 #### 2-2-4 tracker.on(eventName, callback)
 
-```
+```javascript
 $.on(this.name + '.' + eventName, callback);
 ```
 
@@ -224,7 +325,7 @@ $.on(this.name + '.' + eventName, callback);
 
 #### 2-2-5 tracker.un(eventName, callback)
 
-```
+```javascript
 $.un(this.name + '.' + eventName, callback);
 ```
 
@@ -234,7 +335,7 @@ $.un(this.name + '.' + eventName, callback);
 
 首先如果 fields 是一个 object 类型的话：
 
-```
+```javascript
 this.set(fields);
 ```
 
@@ -242,7 +343,7 @@ this.set(fields);
 
 设置 created 标记：
 
-```
+```javascript
 this.created = new Date;
 ```
 
