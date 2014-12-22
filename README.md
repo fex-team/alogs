@@ -2,7 +2,7 @@ alogs
 
 =======
 
-[![Build Status](https://img.shields.io/travis/fex-team/alogs/master.svg)](https://travis-ci.org/zswang/alogs)
+[![Build Status](https://img.shields.io/travis/fex-team/alogs/master.svg)](https://travis-ci.org/fex-team/alogs)
 [![NPM version](https://img.shields.io/npm/v/alogs.svg)](http://badge.fury.io/js/alogs)
 
 ## 概述
