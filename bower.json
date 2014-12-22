@@ -1,7 +1,7 @@
 {
   "name": "alogs",
-  "version": "0.1.1",
-  "homepage": "https://github.com/fex-team/alog",
+  "version": "0.1.3",
+  "homepage": "https://github.com/fex-team/alogs",
   "description": "The front-end log collection module management",
   "authors": [
     "Zswang <wjhu111@21cn.com>"
@@ -16,9 +16,6 @@
     "tracking"
   ],
   "license": "MIT",
-  "devDependencies": {
-    "jdists": "0.3.10"
-  },
   "ignore": [
     "**/.*",
     "node_modules",

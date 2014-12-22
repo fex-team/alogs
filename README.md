@@ -2,6 +2,9 @@ alogs
 
 =======
 
+[![Build Status](https://img.shields.io/travis/fex-team/alogs/master.svg)](https://travis-ci.org/zswang/alogs)
+[![NPM version](https://img.shields.io/npm/v/alogs.svg)](http://badge.fury.io/js/alogs)
+
 ## 概述
 
 alogs 是一个可以并行多个统计模块的框架
