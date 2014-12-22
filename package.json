@@ -1,17 +1,29 @@
 {
-  "name": "alogs",
-  "version": "0.1.0",
-  "description": "The front-end log collection module management",
-  "author": "zswang<jihu.wang@gmail.com>",
-  "main": "index.js",
-  "repository": {
-     "type": "git",
-     "url": "git://github.com/uxrp/alog.git"
-  },
-  "main": "./lib/alog.js",
-  "keywords": [
-    "analytic",
-    "tracking"
-  ],
-  "license": "MIT"
+	"name": "alogs",
+	"version": "0.1.1",
+	"description": "The front-end log collection module management",
+	"author": "zswang<jihu.wang@gmail.com>",
+	"main": "index.js",
+	"repository": {
+		 "type": "git",
+		 "url": "git://github.com/uxrp/alog.git"
+	},
+	"main": "./lib/alog.js",
+	"keywords": [
+		"analytic",
+		"tracking"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"mocha": "~1.20.1",
+		"jdists": "0.3.10",
+		"fecs": "0.1.1",
+		"mocha-phantomjs": "3.5.2",
+    "chai": "1.8.x"
+	},
+	"scripts": {
+		"test": "mocha-phantomjs test/test.html -s webSecurityEnabled=false",
+		"dist": "jdists src/alog.js -o alog.js && uglifyjs alog.js -o alog.min.js -p 5 -c -m",
+		"lint": "fecs src/*.js --reporter=baidu"
+	}
 }
