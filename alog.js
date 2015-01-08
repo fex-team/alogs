@@ -3,13 +3,12 @@
  * @version 1.0
  * @copyright www.baidu.com
  *
- * @file 前端统计框架，支
+ * @file 前端统计框架，支持并行多个统计模块
  * @author 王集鹄(WangJihu,http://weibo.com/zswang)
  *         张军(ZhangJun08,http://weibo.com/zhangjunah)
  *         梁东杰(LiangDongjie,http://weibo.com/nedj)
  */
-
-(function(win, doc) {
+(function (win, doc) {
     // 压缩代码相关
     /* compressor */
     var objectName = win.alogObjectName || 'alog';
@@ -47,12 +46,28 @@
     /**
      * 模块列表
      */
-    var modules;
+    var modules = {
+        alog: {
+            /**
+             * 模块名
+             */
+            name: 'alog',
+            /**
+             * 是否声明
+             */
+            defined: true,
+            /**
+             * 模块实例
+             */
+            instance: entry
+        }
+    };
     /**
      * 处理入口
+     *
      * @param {Object} params 配置项
      */
-    var $ = function(params) {
+    function entry(params) {
         var args = arguments;
         var moduleName;
         var requires;
@@ -80,7 +95,14 @@
             }
             // 如果是引用，这产生临时模块名
             moduleName = !moduleName ? '#' + (guid++) : moduleName;
-            var module = modules[moduleName] = (modules[moduleName] || {});
+            var module;
+            if (modules[moduleName]) {
+                module = modules[moduleName];
+            }
+            else {
+                module = {};
+                modules[moduleName] = module;
+            }
             // 避免模块重复定义
             if (!module.defined) {
                 module.name = moduleName;
@@ -89,12 +111,12 @@
                 if (params === 'define') {
                     module.defining = true;
                 }
-                clearDepend(module);
+                clearDeps(module);
             }
             return;
         }
         if (typeof params === 'function') {
-            params($);
+            params(entry);
             return;
         }
         /**
@@ -107,28 +129,12 @@
          */
         // 'hunter.send' -> [1]=>'hunter', [2]=>'send'
         String(params).replace(/^(?:([\w$_]+)\.)?(\w+)$/,
-            function(all, trackerName, method) {
+            function (all, trackerName, method) {
                 args[0] = method; // 'hunter.send' -> 'send'
-                command.apply($.tracker(trackerName), args);
+                command.apply(entry.tracker(trackerName), args);
             }
         );
-    };
-    modules = {
-        alog: {
-            /**
-             * 模块名
-             */
-            name: 'alog',
-            /**
-             * 是否声明
-             */
-            defined: true,
-            /**
-             * 模块实例
-             */
-            instance: $
-        }
-    };
+    }
     /**
      * 监听列表
      */
@@ -147,6 +153,7 @@
     var defaultTracker;
     /**
      * 加载模块
+     *
      * @param {string} moduleName 模块名
      */
     function loadModules(moduleName) {
@@ -165,27 +172,31 @@
     }
     /**
      * 处理依赖关系
+     *
      * @param {module} module 模块
      */
-    function clearDepend(module) {
+    function clearDeps(module) {
         if (module.defined) {
             return;
         }
         var defined = true;
         var params = [];
         var requires = module.requires;
-        for (var i = 0; requires && i < requires.length; i++) {
-            var moduleName = requires[i];
-            var depend = modules[moduleName] = (modules[moduleName] || {});
-            if (depend.defined || depend === module) {
-                params.push(depend.instance);
-            } else {
-                defined = false;
-                if (!depend.defining) { // 已经存在定义
-                    loadModules(moduleName);
+        if (requires) {
+            for (var i = 0; i < requires.length; i++) {
+                var moduleName = requires[i];
+                var deps = modules[moduleName] = (modules[moduleName] || {});
+                if (deps.defined || deps === module) {
+                    params.push(deps.instance);
                 }
-                depend.waiting = depend.waiting || {};
-                depend.waiting[module.name] = module;
+                else {
+                    defined = false;
+                    if (!deps.defining) { // 已经存在定义
+                        loadModules(moduleName);
+                    }
+                    deps.waiting = deps.waiting || {};
+                    deps.waiting[module.name] = module;
+                }
             }
         }
         if (defined) {
@@ -198,17 +209,19 @@
     }
     /**
      * 清理等待依赖项加载的模块
+     *
      * @param {Module} module 模块对象
      */
     function clearWaiting(module) {
-        for (var p in module.waiting) {
-            if (module.waiting.hasOwnProperty(p)) {
-                clearDepend(module.waiting[p]);
+        for (var moduleName in module.waiting) {
+            if (module.waiting.hasOwnProperty(moduleName)) {
+                clearDeps(module.waiting[moduleName]);
             }
         }
     }
     /**
      * 获取时间戳
+     *
      * @param {Date} now 当前时间
      * @return {number} 返回时间戳
      */
@@ -217,12 +230,13 @@
     }
     /**
      * 绑定事件
-     * @param {HTMLElement} element 页面元素
+     *
+     * @param {HTMLElement=} element 页面元素，没有指定则为 alog 对象
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
      * @example
         ```js
-        alog.on('report', function(data){ data.tt = +new Date; });
+        alog.on('report', function (data) { data.tt = +new Date; });
         ```
      */
     function on(element, eventName, callback) {
@@ -232,23 +246,26 @@
         if (typeof element === 'string') {
             callback = eventName;
             eventName = element;
-            element = $;
+            element = entry;
         }
         try {
-            if (element === $) {
+            if (element === entry) {
                 alogListeners[eventName] = alogListeners[eventName] || [];
                 alogListeners[eventName].unshift(callback);
                 return;
             }
             if (element.addEventListener) {
                 element.addEventListener(eventName, callback, false);
-            } else if (element.attachEvent) {
+            }
+            else if (element.attachEvent) {
                 element.attachEvent('on' + eventName, callback);
             }
-        } catch (ex) {}
+        }
+        catch (ex) {}
     }
     /**
      * 注销事件绑定
+     *
      * @param {HTMLElement} element 页面元素
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
@@ -260,10 +277,10 @@
         if (typeof element === 'string') {
             callback = eventName;
             eventName = element;
-            element = $;
+            element = entry;
         }
         try {
-            if (element === $) {
+            if (element === entry) {
                 var listener = alogListeners[eventName];
                 if (!listener) {
                     return;
@@ -278,13 +295,16 @@
             }
             if (element.removeEventListener) {
                 element.removeEventListener(eventName, callback, false);
-            } else {
+            }
+            else {
                 element.detachEvent && element.detachEvent('on' + eventName, callback);
             }
-        } catch (ex) {}
+        }
+        catch (ex) {}
     }
     /**
      * 触发事件
+     *
      * @param {string} eventName 事件名 "error"、"close"
      * @return {Object} 返回当前实例
      * @example
@@ -299,7 +319,7 @@
         }
         var items = [];
         var args = arguments;
-        for (var i = 1; i < args.length; i++) {
+        for (var i = 1, len = args.length; i < len; i++) {
             items.push(args[i]);
         }
         var result = 0;
@@ -313,6 +333,7 @@
     }
     /**
      * 上报数据
+     *
      * @param {string} url 目标链接
      * @param {Object} data 上报数据
      */
@@ -320,7 +341,8 @@
         if (!url || !data) {
             return;
         }
-        var image = new Image(1, 1);
+        // @see http://jsperf.com/new-image-vs-createelement-img
+        var image = doc.createElement('img');
         var items = [];
         for (var key in data) {
             if (data[key]) {
@@ -328,21 +350,22 @@
             }
         }
         var name = 'img_' + (+new Date());
-        $[name] = image;
-        image.onload = image.onerror = function() {
-            $[name] =
+        entry[name] = image;
+        image.onload = image.onerror = function () {
+            entry[name] =
                 image =
                 image.onload =
                 image.onerror = null;
-            delete $[name];
+            delete entry[name];
         };
         image.src = url + (url.indexOf('?') < 0 ? '?' : '&') + items.join('&');
     }
     /**
      * 字段名使用简写
+     *
      * @param {Object} protocolParameter 字段名对照表，如果为null表示不上报
      * @param {Object} data 待处理的数据
-     * @return{Object} 返回处理后的数据
+     * @return {Object} 返回处理后的数据
      */
     function runProtocolParameter(protocolParameter, data) {
         if (!protocolParameter) {
@@ -371,12 +394,14 @@
             if (typeof methodFunc === 'function') {
                 methodFunc.apply(this, params);
             }
-        } else { // send|fire // 实例创建以后才能调用的方法
+        }
+        else { // send|fire // 实例创建以后才能调用的方法
             this.argsList.push(args);
         }
     }
     /**
      * 合并两个对象
+     *
      * @param {Object} a 对象1
      * @param {Object} b 对象2
      * @return {Object} 返回合并后的对象
@@ -397,6 +422,7 @@
     }
     /**
      * 追踪器构造器
+     *
      * @param {string} name 追踪器名称
      */
     function Tracker(name) {
@@ -408,18 +434,18 @@
             }
         };
         this.argsList = [];
-        this.alog = $;
+        this.alog = entry;
     }
     /**
      * 获取追踪器
-     * @param {string} trackerName 追踪器名称，如果为'*'则获取全部追踪器
-     * @return{Object|Array} 返回追踪器对象
+     *
+     * @param {string} trackerName 追踪器名称，如果为 '*' 则获取全部追踪器
+     * @return {Object|Array} 返回追踪器对象
      */
     function getTracker(trackerName) {
-        var result;
         trackerName = trackerName || 'default';
         if (trackerName === '*') {
-            result = [];
+            var result = [];
             for (var p in trackers) {
                 if (trackers.hasOwnProperty(p)) {
                     result.push(trackers[p]);
@@ -427,17 +453,15 @@
             }
             return result;
         }
-        var tracker = trackers[trackerName];
-        if (!tracker) {
-            tracker = trackers[trackerName] = new Tracker(trackerName);
-        }
-        return tracker;
+        return (trackers[trackerName] =
+            trackers[trackerName] || new Tracker(trackerName));
     }
     /**
      * 创建追踪器
+     *
      * @param {Object} fields 字段列表
      */
-    Tracker.prototype.create = function(fields) {
+    Tracker.prototype.create = function (fields) {
         if (this.created) {
             return;
         }
@@ -453,10 +477,11 @@
     };
     /**
      * 发送日志数据
+     *
      * @param {string} hitType 数据类型
      * @param {Object} fieldObject 发送数据
      */
-    Tracker.prototype.send = function(hitType, fieldObject) {
+    Tracker.prototype.send = function (hitType, fieldObject) {
         var data = merge({
             ts: timestamp().toString(36),
             t: hitType,
@@ -464,7 +489,8 @@
         }, this.fields);
         if (typeof fieldObject === 'object') {
             data = merge(data, fieldObject);
-        } else {
+        }
+        else {
             var args = arguments;
             switch (hitType) {
                 case 'pageview':
@@ -524,10 +550,11 @@
     };
     /**
      * 设置字段值
+     *
      * @param {string} name 字段名
      * @param {Any} value 字段值
      */
-    Tracker.prototype.set = function(name, value) {
+    Tracker.prototype.set = function (name, value) {
         if (typeof name === 'string') {
             if (name === 'protocolParameter') {
                 value = merge({
@@ -536,7 +563,8 @@
                 }, value);
             }
             this.fields[name] = value;
-        } else if (typeof name === 'object') {
+        }
+        else if (typeof name === 'object') {
             for (var p in name) {
                 if (name.hasOwnProperty(p)) {
                     this.set(p, name[p]);
@@ -546,11 +574,12 @@
     };
     /**
      * 获取字段值
+     *
      * @param {string} name 字段名
      * @param {Function} callback 回调函数
      * @return {Object} 返回当前实例
      */
-    Tracker.prototype.get = function(name, callback) {
+    Tracker.prototype.get = function (name, callback) {
         var result = this.fields[name];
         if (typeof callback === 'function') {
             callback(result);
@@ -559,42 +588,45 @@
     };
     /**
      * 触发事件
+     *
      * @param {string} eventName 事件名
      * @return {Object} 返回当前实例
      */
-    Tracker.prototype.fire = function(eventName) {
+    Tracker.prototype.fire = function (eventName) {
         var items = [this.name + '.' + eventName];
         var args = arguments;
-        for (var i = 1; i < args.length; i++) {
+        for (var i = 1, len = args.length; i < len; i++) {
             items.push(args[i]);
         }
         return fire.apply(this, items);
     };
     /**
      * 绑定事件
+     *
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
      */
-    Tracker.prototype.on = function(eventName, callback) {
-        $.on(this.name + '.' + eventName, callback);
+    Tracker.prototype.on = function (eventName, callback) {
+        entry.on(this.name + '.' + eventName, callback);
     };
     /**
      * 注销事件
+     *
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
      */
-    Tracker.prototype.un = function(eventName, callback) {
-        $.un(this.name + '.' + eventName, callback);
+    Tracker.prototype.un = function (eventName, callback) {
+        entry.un(this.name + '.' + eventName, callback);
     };
-    $.name = 'alog';
-    $.sid = sid;
-    $.defined = true;
-    $.timestamp = timestamp;
-    $.un = un;
-    $.on = on;
-    $.fire = fire;
-    $.tracker = getTracker;
-    $('init');
+    entry.name = 'alog';
+    entry.sid = sid;
+    entry.defined = true;
+    entry.timestamp = timestamp;
+    entry.un = un;
+    entry.on = on;
+    entry.fire = fire;
+    entry.tracker = getTracker;
+    entry('init');
     defaultTracker = getTracker();
     defaultTracker.set('protocolParameter', {
         modules: null
@@ -603,25 +635,25 @@
         // 处理临时alog对象
         var items = [].concat(oldObject.p || [], oldObject.q || []);
         oldObject.p = oldObject.q = null; // 清理内存
-        for (var p in $) {
-            if ($.hasOwnProperty(p)) {
-                oldObject[p] = $[p];
+        for (var p in entry) {
+            if (entry.hasOwnProperty(p)) {
+                oldObject[p] = entry[p];
             }
         }
-        $.p = $.q = { // 接管之前的定义
-            push: function(args) {
-                $.apply($, args);
+        entry.p = entry.q = { // 接管之前的定义
+            push: function (args) {
+                entry.apply(entry, args);
             }
         };
         // 开始处理缓存命令
         for (var i = 0; i < items.length; i++) {
-            $.apply($, items[i]);
+            entry.apply(entry, items[i]);
         }
     }
-    win[objectName] = $;
+    win[objectName] = entry;
     /*<ie>*/
     if (ie) {
-        on(doc, 'mouseup', function(e) {
+        on(doc, 'mouseup', function (e) {
             var target = e.target || e.srcElement;
             if (target.nodeType === 1 && /^ajavascript:/i.test(target.tagName + target.href)) {
                 clickJsLinkTime = new Date();
@@ -634,9 +666,9 @@
      */
     function unloadHandler() {
         /*<ie>*/
-        // http://msdn.microsoft.com/en-us/library/ms536907(VS.85).aspx
+        // @see http://msdn.microsoft.com/en-us/library/ms536907(VS.85).aspx
         // Click an anchor that refers to another document.
-        // 修复IE中点击<a href="javascript:">...</a>也会触发beforeunload事件的问题
+        // 修复 IE 中点击 `<a href="javascript:">...</a>` 也会触发 beforeunload 事件的问题
         if (ie && (new Date() - clickJsLinkTime < 50)) {
             return;
         }

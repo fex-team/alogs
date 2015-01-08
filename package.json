@@ -1,6 +1,6 @@
 {
 	"name": "alogs",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "The front-end log collection module management",
 	"author": "zswang<jihu.wang@gmail.com>",
 	"main": "index.js",
