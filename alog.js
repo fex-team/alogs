@@ -1,26 +1,26 @@
-(function(winElement, docElement) {
-    /**
-     * alog
-     * @file alog.js
-     * @description 前端统计框架
-     * @author 王集鹄(WangJihu,http://weibo.com/zswang),
-     *         张军(ZhangJun08,http://weibo.com/zhangjunah),
-     *         梁东杰(LiangDongjie,http://weibo.com/nedj)
-     * @version 1.0
-     * @copyright www.baidu.com
-     * @profile
-     */
+/**
+ * alog
+ * @version 1.0
+ * @copyright www.baidu.com
+ *
+ * @file 前端统计框架，支
+ * @author 王集鹄(WangJihu,http://weibo.com/zswang)
+ *         张军(ZhangJun08,http://weibo.com/zhangjunah)
+ *         梁东杰(LiangDongjie,http://weibo.com/nedj)
+ */
+
+(function(win, doc) {
     // 压缩代码相关
     /* compressor */
-    var objectName = winElement.alogObjectName || 'alog';
-    var oldObject = winElement[objectName];
+    var objectName = win.alogObjectName || 'alog';
+    var oldObject = win[objectName];
     if (oldObject && oldObject.defined) { // 避免重复加载
         return;
     }
     /*<ie>*/
-    var ie = docElement.all && winElement.attachEvent;
+    var ie = win.attachEvent && !window.opera;
     /**
-     * @description 是否IE
+     * 是否IE
      */
     /**
      * 点击javascript链接的时间
@@ -28,28 +28,28 @@
     var clickJsLinkTime;
     /*</ie>*/
     /**
-     * @description 起始时间
+     * 起始时间
      */
     var startTime = (oldObject && oldObject.l) || (+new Date());
     /**
-     * @description session id 优先从服务端获取
+     * session id 优先从服务端获取
      */
-    var sid = winElement.logId ||
+    var sid = win.logId ||
         ((+new Date()).toString(36) + Math.random().toString(36).substr(2, 3));
     /**
-     * @description id编码
+     * id编码
      */
     var guid = 0;
     /**
-     * @description 正在加载的脚本
+     * 正在加载的脚本
      */
     var loadScripts = {};
     /**
-     * @description 模块列表
+     * 模块列表
      */
     var modules;
     /**
-     * @description 处理入口
+     * 处理入口
      * @param {Object} params 配置项
      */
     var $ = function(params) {
@@ -130,15 +130,15 @@
         }
     };
     /**
-     * @description 监听列表
+     * 监听列表
      */
     var alogListeners = {};
     /**
-     * @description 追踪器字典
+     * 追踪器字典
      */
     var trackers = {};
     /**
-     * @description 页面关闭中
+     * 页面关闭中
      */
     var closing;
     /**
@@ -146,7 +146,7 @@
      */
     var defaultTracker;
     /**
-     * @description 加载模块
+     * 加载模块
      * @param {string} moduleName 模块名
      */
     function loadModules(moduleName) {
@@ -157,14 +157,14 @@
         }
         loadScripts[scriptUrl] = true;
         var scriptTag = 'script';
-        var scriptElement = docElement.createElement(scriptTag);
-        var lastElement = docElement.getElementsByTagName(scriptTag)[0];
+        var scriptElement = doc.createElement(scriptTag);
+        var lastElement = doc.getElementsByTagName(scriptTag)[0];
         scriptElement.async = !0;
         scriptElement.src = scriptUrl;
         lastElement.parentNode.insertBefore(scriptElement, lastElement);
     }
     /**
-     * @description 处理依赖关系
+     * 处理依赖关系
      * @param {module} module 模块
      */
     function clearDepend(module) {
@@ -197,7 +197,7 @@
         }
     }
     /**
-     * @description 清理等待依赖项加载的模块
+     * 清理等待依赖项加载的模块
      * @param {Module} module 模块对象
      */
     function clearWaiting(module) {
@@ -208,7 +208,7 @@
         }
     }
     /**
-     * @description 获取时间戳
+     * 获取时间戳
      * @param {Date} now 当前时间
      * @return {number} 返回时间戳
      */
@@ -216,7 +216,7 @@
         return (now || new Date()) - startTime;
     }
     /**
-     * @description 绑定事件
+     * 绑定事件
      * @param {HTMLElement} element 页面元素
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
@@ -248,7 +248,7 @@
         } catch (ex) {}
     }
     /**
-     * @description 注销事件绑定
+     * 注销事件绑定
      * @param {HTMLElement} element 页面元素
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
@@ -284,7 +284,7 @@
         } catch (ex) {}
     }
     /**
-     * @description 触发事件
+     * 触发事件
      * @param {string} eventName 事件名 "error"、"close"
      * @return {Object} 返回当前实例
      * @example
@@ -312,7 +312,7 @@
         return result;
     }
     /**
-     * @description 上报数据
+     * 上报数据
      * @param {string} url 目标链接
      * @param {Object} data 上报数据
      */
@@ -339,7 +339,7 @@
         image.src = url + (url.indexOf('?') < 0 ? '?' : '&') + items.join('&');
     }
     /**
-     * @description 字段名使用简写
+     * 字段名使用简写
      * @param {Object} protocolParameter 字段名对照表，如果为null表示不上报
      * @param {Object} data 待处理的数据
      * @return{Object} 返回处理后的数据
@@ -357,7 +357,7 @@
         return result;
     }
     /**
-     * @description 执行命令
+     * 执行命令
      */
     function command() {
         var args = arguments;
@@ -376,7 +376,7 @@
         }
     }
     /**
-     * @description 合并两个对象
+     * 合并两个对象
      * @param {Object} a 对象1
      * @param {Object} b 对象2
      * @return {Object} 返回合并后的对象
@@ -396,7 +396,7 @@
         return result;
     }
     /**
-     * @description 追踪器构造器
+     * 追踪器构造器
      * @param {string} name 追踪器名称
      */
     function Tracker(name) {
@@ -411,7 +411,7 @@
         this.alog = $;
     }
     /**
-     * @description 获取追踪器
+     * 获取追踪器
      * @param {string} trackerName 追踪器名称，如果为'*'则获取全部追踪器
      * @return{Object|Array} 返回追踪器对象
      */
@@ -434,7 +434,7 @@
         return tracker;
     }
     /**
-     * @description 创建追踪器
+     * 创建追踪器
      * @param {Object} fields 字段列表
      */
     Tracker.prototype.create = function(fields) {
@@ -618,10 +618,10 @@
             $.apply($, items[i]);
         }
     }
-    winElement[objectName] = $;
+    win[objectName] = $;
     /*<ie>*/
     if (ie) {
-        on(docElement, 'mouseup', function(e) {
+        on(doc, 'mouseup', function(e) {
             var target = e.target || e.srcElement;
             if (target.nodeType === 1 && /^ajavascript:/i.test(target.tagName + target.href)) {
                 clickJsLinkTime = new Date();
@@ -630,7 +630,7 @@
     }
     /*</ie>*/
     /**
-     * @description 页面关闭时处理方法
+     * 页面关闭时处理方法
      */
     function unloadHandler() {
         /*<ie>*/
@@ -661,6 +661,6 @@
             }
         }
     }
-    on(winElement, 'beforeunload', unloadHandler);
-    on(winElement, 'unload', unloadHandler);
+    on(win, 'beforeunload', unloadHandler);
+    on(win, 'unload', unloadHandler);
 })(window, document);
