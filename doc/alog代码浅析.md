@@ -1,3 +1,9 @@
+# 在此处输入标题
+
+标签（空格分隔）： 未分类
+
+---
+
 alog详细解析
 ==============
 
@@ -9,7 +15,7 @@ alog详细解析
 
 之所以在开头点出，因为只有带着这 3 个 object，才能看懂 alog 代码中的大部分函数
 
-```javascript
+```js
 alog_listeners = {
 	...
 }
@@ -46,7 +52,7 @@ modules = {
 modules['moduleName'] = {
 	name: 'moduleName',
 	requires: [...],
-	creator: function(){...},
+	creator: function() {...},
 	defining: ture,
 	defined: ture,
 	instance: ...,
@@ -57,18 +63,18 @@ modules['moduleName'] = {
 ### alog 的同步方法与异步方法的区别：
 
 * 同步方法会在模块加载完，才开始绑定点击事件，所以可能会丢失加载前的点击。同步方法适合用户模块定义内部。
-* 异步方法在执行代码后生效，如果使用的模块还没加载完，会先放到事件队列里，等模块加载完成并执行 start 方法后，会自动执行事件队列里的事件。
+* 异步方法在执行代码后生效，如果使用的模块还没加载完，会先放到事件队列里，等模块加载完成并执行 create 方法后，会自动执行事件队列里的事件。
 
 ### alog 中 tracker 与 module 的区别与联系
 
 虽然 tracker 和 module 看起来很相似，而且在定义 module 和创建 tracker 的时候，使用的都是同样的名称，但是它们还是不同的概念：
 	
-#####1. module 不是必需的
+##### 1. module 不是必需的
 
 当在执行的统计非常简单的时候，例如 PV 的统计，则可以完全不需要使用 module 而直接完成对应功能：
 
-```javascript
-alog('pv.start', {
+```js
+alog('pv.create', {
     postUrl: 'http://localhost/v.gif'
 });
 alog('pv.send', 'pageview');
@@ -131,9 +137,9 @@ alog('set', 'alias', {
 
 ---
 
-## 1. alog入口调用解析
+## 1. alog 入口调用解析
 
-在alog.js代码中，通过
+在 `alog.js` 代码中，通过
 
 ```javascript
 var objectName = winElement.alogObjectName || 'alog';
@@ -152,13 +158,13 @@ tracker.method(data);
 
 ### 第一种：
 
-它会直接调用 alog.js 里对应的 `$.method(data);`
+它会直接调用 `alog.js` 里对应的 `$.method(data);`
 
 ### 第二种：
 
 在入口函数中
 
-```javascript
+```js
 $ = function(params) {
   ...
 }
@@ -168,7 +174,7 @@ $ = function(params) {
 
 根据参数是 'define'、'require'、或者其它参数，来进行不同的处理：
 
-```javascript
+```js
 if (params == 'define' || params == 'require') {
   ...
 }
@@ -188,13 +194,13 @@ String(params).replace(/^(?:([\w$_]+)\.)?(\w+)$/, function(all, trackerName, met
 
 已经获得了一个 tracker 对象,例如：
 
-```javascript
+```js
 var tracker = alog.tracker(trackerName);
 ```
 
 从而调用 alog.js 中 Tracker 的对应方法
 
-##2. alog API方法
+##2. alog API 方法
 
 ### 2-1 alog.method(data)
 
@@ -212,16 +218,16 @@ $.tracker = getTracker;
 
 然后根 据trackerName 的不同做出不同的处理：
 
-##### 若trackerName为空
+##### 若 trackerName 为空
 
 从当前 trackers 对象中，返回 trackers['default']
 若 trackers['default'] 也为空，则新建一个 name='default' 的 tracker 对象并返回
 
-##### 若trackerName = '*'
+##### 若 trackerName = '*'
 
 将 trackers 对象中的所有 tracker 对象 push 到一个数组中并返回
 
-#####其它情况：
+##### 其它情况：
 
 从当前 trackers 对象中，返回 trackers[trackerName]
 若 trackers[trackerName] 也为空，则新建一个 name=trackerName 的 tracker 对象并返回
@@ -232,7 +238,7 @@ $.tracker = getTracker;
 
 #### 2-1-3 alog.on(element, eventName, callback)
 
-##### 若element是字符串类型:
+##### 若 element 是字符串类型:
 
 获取alog_listeners对象中key为element的数组(若未定义则初始化为[])
 
@@ -240,7 +246,7 @@ $.tracker = getTracker;
 
 ##### 其它：
 
-对element这个元素监听事件eventName,回调函数为callback:
+对 element 这个元素监听事件 eventName，回调函数为callback:
 
 ```javascript
 if (element.addEventListener) {
@@ -385,7 +391,7 @@ tracker 的 argsList 数组中保存的是在 tracker 实例创建之前，此 t
 
 这个方法从$入口函数开始获取传入参数的 trackerName 和 function:
 
-```javascript
+```js
 moduleName = args[i];
 creator = args[i];
 ```
@@ -401,7 +407,7 @@ clearDepend 方法的作用主要是获取自身 module 所依赖的各 个modul
 
 如果 require 的 module2 不存在，则加载这个 module2：
 
-```javascript
+```js
 if (!depend.defining) {
   loadModules(moduleName);
 }
@@ -409,7 +415,7 @@ if (!depend.defining) {
 
 并在 module2 的等待数组 waiting 中加入 module，表示 module 等待着 module2 的 define 方法的执行
 
-```javascript
+```js
 depend.waiting = depend.waiting || {};
 depend.waiting[module.name] = module;
 ```
@@ -418,7 +424,7 @@ depend.waiting[module.name] = module;
 
 首先依旧是先获取参数 moduleName：
 
-```javascript
+```js
 case 'string':
   moduleName = args[i];  
   break;
@@ -428,7 +434,7 @@ case 'string':
 
 newModule 的 require 属性对应的则是 module
 
-```javascript
+```js
 if (params == 'require') {
   if (moduleName && !requires) requires = [moduleName];
   moduleName = null;
@@ -439,7 +445,7 @@ newModule.requires = requires;
 
 然后执行对 newModule 的 clearDepend() 方法，处理其依赖关系
 
-## 3. ALog应用示例
+## 3. ALog 应用示例
 
 * 简单统计: pv统计，参看[pv统计](https://github.com/uxrp/alog/tree/master/examples/pv)
 * 复杂统计: 自定义模块统计，参看[speed统计](https://github.com/uxrp/alog/tree/master/examples/speed)
